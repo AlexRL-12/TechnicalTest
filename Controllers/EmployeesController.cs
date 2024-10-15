@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
 using TechnicalTest.Models;
 using TechnicalTest.Services;
 
@@ -19,7 +21,7 @@ namespace TechnicalTest.Controllers
 
     [HttpGet]
     [Authorize(Roles = "Admin,User")]
-    public IActionResult GetEmployees()
+    public ActionResult<IEnumerable<Employee>> GetEmployees()
     {
       var employees = _employeeService.GetAllEmployees();
       return Ok(employees);
@@ -27,27 +29,54 @@ namespace TechnicalTest.Controllers
 
     [HttpGet("{id}")]
     [Authorize(Roles = "Admin,User")]
-    public IActionResult GetEmployee(int id)
+    public ActionResult<Employee> GetEmployee(int id)
     {
       var employee = _employeeService.GetEmployeeById(id);
-      if (employee == null) return NotFound();
+      if (employee == null) return NotFound($"Employee with ID {id} not found.");
       return Ok(employee);
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public IActionResult AddEmployee(Employee employee)
+    public ActionResult<Employee> AddEmployee([FromBody] Employee employee)
     {
+      if (employee == null)
+      {
+        return BadRequest("Employee data is required.");
+      }
+
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
+      // Check for duplicate employee by email
+      var existingEmployee = _employeeService.GetAllEmployees().FirstOrDefault(e => e.Name == employee.Name);
+      if (existingEmployee != null)
+      {
+        return Conflict("An employee with this email already exists.");
+      }
+
       _employeeService.AddEmployee(employee);
       return CreatedAtAction(nameof(GetEmployee), new { id = employee.Id }, employee);
     }
 
     [HttpPut("{id}")]
     [Authorize(Roles = "Admin")]
-    public IActionResult UpdateEmployee(int id, Employee employee)
+    public ActionResult<Employee> UpdateEmployee(int id, [FromBody] Employee employee)
     {
+      if (employee == null)
+      {
+        return BadRequest("Employee data is required.");
+      }
+
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
       var updatedEmployee = _employeeService.UpdateEmployee(id, employee);
-      if (updatedEmployee == null) return NotFound();
+      if (updatedEmployee == null) return NotFound($"Employee with ID {id} not found.");
       return Ok(updatedEmployee);
     }
 
@@ -56,7 +85,7 @@ namespace TechnicalTest.Controllers
     public IActionResult DeleteEmployee(int id)
     {
       var success = _employeeService.DeleteEmployee(id);
-      if (!success) return NotFound();
+      if (!success) return NotFound($"Employee with ID {id} not found.");
       return NoContent();
     }
   }

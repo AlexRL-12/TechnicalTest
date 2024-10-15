@@ -1,6 +1,6 @@
-﻿using TechnicalTest.Models;  // Cambiar esto a technicalTest.Models si es necesario
+﻿using TechnicalTest.Models;  
 
-namespace TechnicalTest.Services  // Asegúrate de que el namespace sea consistente
+namespace TechnicalTest.Services  
 {
   public interface IEmployeeService
   {

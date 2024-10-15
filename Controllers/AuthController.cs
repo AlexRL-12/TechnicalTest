@@ -4,6 +4,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using TechnicalTest.Models; 
+using System.Linq;           
+using System;
 
 namespace TechnicalTest.Controllers
 {
@@ -12,27 +15,46 @@ namespace TechnicalTest.Controllers
   public class AuthController : ControllerBase
   {
     private readonly IConfiguration _configuration;
+    private readonly AppDbContext _context;
 
-    public AuthController(IConfiguration configuration)
+    public AuthController(IConfiguration configuration, AppDbContext context)
     {
       _configuration = configuration;
+      _context = context;
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginModel login)
+    public ActionResult<string> Login([FromBody] LoginModel login)
     {
-      if (login.Username == "admin" && login.Password == "password123")
+      // Validate that the model is not null and that the fields are not empty
+      if (login == null || string.IsNullOrEmpty(login.Username) || string.IsNullOrEmpty(login.Password))
       {
-        var token = GenerateJwtToken("Admin");
-        return Ok(new { token });
-      }
-      else if (login.Username == "user" && login.Password == "password123")
-      {
-        var token = GenerateJwtToken("User");
-        return Ok(new { token });
+        return BadRequest("Username and password are required.");
       }
 
-      return Unauthorized();
+      var user = _context.Employees
+                         .FirstOrDefault(e => e.Name == login.Username);
+
+      if (user == null)
+      {
+        return Unauthorized("Username not found.");
+      }
+
+      if (!VerifyPassword(login.Password, user.PasswordHash))
+      {
+        return Unauthorized("Incorrect password.");
+      }
+
+      string role = user.CurrentPosition > 1 ? "Admin" : "User";
+      var token = GenerateJwtToken(role);
+
+      return Ok(new { token });
+    }
+
+
+    private bool VerifyPassword(string password, string passwordHash)
+    {
+      return password == passwordHash;
     }
 
     private string GenerateJwtToken(string role)
@@ -42,8 +64,8 @@ namespace TechnicalTest.Controllers
 
       var claims = new[]
       {
-                new Claim(ClaimTypes.Role, role)
-            };
+        new Claim(ClaimTypes.Role, role)
+      };
 
       var token = new JwtSecurityToken(
           issuer: _configuration["Jwt:Issuer"],
@@ -55,10 +77,10 @@ namespace TechnicalTest.Controllers
       return new JwtSecurityTokenHandler().WriteToken(token);
     }
   }
-
   public class LoginModel
   {
     public string Username { get; set; }
     public string Password { get; set; }
   }
+
 }
