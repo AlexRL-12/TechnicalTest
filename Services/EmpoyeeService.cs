@@ -24,7 +24,6 @@ public class EmployeeService : IEmployeeService
 
   public void AddEmployee(Employee employee)
   {
-    // Input validations
     if (string.IsNullOrWhiteSpace(employee.Name))
     {
       throw new ArgumentException("Employee name is required.");
@@ -36,17 +35,16 @@ public class EmployeeService : IEmployeeService
     }
 
     var existingEmployee = _context.Employees
-        .FirstOrDefault(e => e.Id == employee.Id || e.Name == employee.Name);
+        .AsNoTracking()  
+        .FirstOrDefault(e => e.Name == employee.Name);
 
     if (existingEmployee != null)
     {
-      throw new InvalidOperationException("The employee already exists.");
+      throw new InvalidOperationException("An employee with this name already exists.");
     }
 
-    // Add the new employee
     _context.Employees.Add(employee);
 
-    // Error handling when saving changes
     try
     {
       _context.SaveChanges();
@@ -57,16 +55,16 @@ public class EmployeeService : IEmployeeService
     }
   }
 
+
   public Employee UpdateEmployee(int id, Employee employee)
   {
-    // Check if the employee exists
     var existingEmployee = _context.Employees.Find(id);
+
     if (existingEmployee == null)
     {
       throw new InvalidOperationException("The employee does not exist.");
     }
 
-    // Input validations
     if (string.IsNullOrWhiteSpace(employee.Name))
     {
       throw new ArgumentException("Employee name is required.");
@@ -77,16 +75,15 @@ public class EmployeeService : IEmployeeService
       throw new ArgumentOutOfRangeException("Salary must be a positive value.");
     }
 
-    // Update employee properties
     existingEmployee.Name = employee.Name;
     existingEmployee.Position = employee.Position;
+    existingEmployee.Salary = employee.Salary;
 
     if (!string.IsNullOrWhiteSpace(employee.PasswordHash))
     {
       existingEmployee.PasswordHash = BCrypt.Net.BCrypt.HashPassword(employee.PasswordHash);
     }
 
-    // Error handling when saving changes
     try
     {
       _context.SaveChanges();
@@ -99,19 +96,17 @@ public class EmployeeService : IEmployeeService
     return existingEmployee;
   }
 
+
   public bool DeleteEmployee(int id)
   {
-    // Check if the employee exists
     var employee = _context.Employees.Find(id);
     if (employee == null)
     {
       throw new InvalidOperationException("The employee does not exist.");
     }
 
-    // Remove the employee
     _context.Employees.Remove(employee);
 
-    // Error handling when saving changes
     try
     {
       _context.SaveChanges();
@@ -123,4 +118,5 @@ public class EmployeeService : IEmployeeService
 
     return true;
   }
+
 }

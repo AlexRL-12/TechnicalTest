@@ -49,21 +49,18 @@ public class AppDbContext : DbContext
 
   private void SeedData(ModelBuilder modelBuilder)
   {
-    // Crear Departamentos
     modelBuilder.Entity<Department>().HasData(
         new Department { Id = 1, Name = "IT" },
         new Department { Id = 2, Name = "HR" },
         new Department { Id = 3, Name = "Finance" }
     );
 
-    // Crear Proyectos
     modelBuilder.Entity<Project>().HasData(
         new Project { Id = 1, Name = "Project A" },
         new Project { Id = 2, Name = "Project B" },
         new Project { Id = 3, Name = "Project C" }
     );
 
-    // Crear Empleados (añadiendo PasswordHash)
     modelBuilder.Entity<Employee>().HasData(
         new Employee { Id = 1, Name = "Alice Johnson", CurrentPosition = 2, Salary = 60000, Position = "Software Engineer", DepartmentId = 1, PasswordHash = "alicepass" },
         new Employee { Id = 2, Name = "Bob Smith", CurrentPosition = 1, Salary = 50000, Position = "HR Specialist", DepartmentId = 2, PasswordHash = "bobpass" },
@@ -71,14 +68,12 @@ public class AppDbContext : DbContext
         new Employee { Id = 4, Name = "Diana Prince", CurrentPosition = 1, Salary = 70000, Position = "Project Manager", DepartmentId = 1, PasswordHash = "dianapass" }
     );
 
-    // Crear Historias de Posición para los empleados
     modelBuilder.Entity<PositionHistory>().HasData(
         new PositionHistory { Id = 1, EmployeeId = 1, Position = "Junior Developer", StartDate = DateTime.Now.AddYears(-2), EndDate = DateTime.Now.AddYears(-1) },
         new PositionHistory { Id = 2, EmployeeId = 2, Position = "Recruiter", StartDate = DateTime.Now.AddYears(-3), EndDate = DateTime.Now.AddYears(-1) },
         new PositionHistory { Id = 3, EmployeeId = 3, Position = "Intern", StartDate = DateTime.Now.AddYears(-4), EndDate = DateTime.Now.AddYears(-3) }
     );
 
-    // Relacionar empleados con proyectos
     modelBuilder.Entity<Project>()
         .HasMany(p => p.Employees)
         .WithMany(e => e.Projects)

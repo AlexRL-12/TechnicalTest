@@ -26,7 +26,6 @@ namespace TechnicalTest.Controllers
     [HttpPost("login")]
     public ActionResult<string> Login([FromBody] LoginModel login)
     {
-      // Validate that the model is not null and that the fields are not empty
       if (login == null || string.IsNullOrEmpty(login.Username) || string.IsNullOrEmpty(login.Password))
       {
         return BadRequest("Username and password are required.");
@@ -82,5 +81,13 @@ namespace TechnicalTest.Controllers
     public string Username { get; set; }
     public string Password { get; set; }
   }
+
+  public class RegisterModel
+  {
+    public string Username { get; set; }
+    public string Password { get; set; }
+    public int Position { get; set; }  
+  }
+
 
 }

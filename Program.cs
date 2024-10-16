@@ -6,15 +6,12 @@ using TechnicalTest.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar el servicio DbContext con MySQL
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
         new MySqlServerVersion(new Version(8, 0, 26))));
 
-// Agregar el servicio IEmployeeService
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
-// Configurar autenticación con JWT
 builder.Services.AddAuthentication(options =>
 {
   options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -33,7 +30,6 @@ builder.Services.AddAuthentication(options =>
   };
 });
 
-// Configurar Swagger para JWT
 builder.Services.AddSwaggerGen(c =>
 {
   c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
@@ -66,7 +62,6 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configuración del middleware HTTP
 if (app.Environment.IsDevelopment())
 {
   app.UseSwagger();
@@ -75,7 +70,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Activar autenticación y autorización
 app.UseAuthentication();
 app.UseAuthorization();
 

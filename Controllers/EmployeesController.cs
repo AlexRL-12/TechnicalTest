@@ -32,9 +32,21 @@ namespace TechnicalTest.Controllers
     public ActionResult<Employee> GetEmployee(int id)
     {
       var employee = _employeeService.GetEmployeeById(id);
-      if (employee == null) return NotFound($"Employee with ID {id} not found.");
-      return Ok(employee);
+      if (employee == null)
+        return NotFound($"Employee with ID {id} not found.");
+
+      return Ok(new
+      {
+        employee.Id,
+        employee.Name,
+        employee.Position,
+        employee.CurrentPosition,
+        employee.Salary,
+        TotalSalary = employee.TotalSalary,
+        employee.DepartmentId
+      });
     }
+
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
@@ -50,11 +62,10 @@ namespace TechnicalTest.Controllers
         return BadRequest(ModelState);
       }
 
-      // Check for duplicate employee by email
       var existingEmployee = _employeeService.GetAllEmployees().FirstOrDefault(e => e.Name == employee.Name);
       if (existingEmployee != null)
       {
-        return Conflict("An employee with this email already exists.");
+        return Conflict("An employee with this name already exists.");
       }
 
       _employeeService.AddEmployee(employee);
