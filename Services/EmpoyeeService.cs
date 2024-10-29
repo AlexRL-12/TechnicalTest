@@ -2,6 +2,8 @@
 using TechnicalTest.Models;
 using TechnicalTest.Services;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class EmployeeService : IEmployeeService
 {
@@ -22,7 +24,7 @@ public class EmployeeService : IEmployeeService
     return _context.Employees.AsNoTracking().FirstOrDefault(e => e.Id == id);
   }
 
-  public void AddEmployee(Employee employee)
+  public async Task AddEmployee(Employee employee)
   {
     if (string.IsNullOrWhiteSpace(employee.Name))
     {
@@ -34,27 +36,26 @@ public class EmployeeService : IEmployeeService
       throw new ArgumentOutOfRangeException("Salary must be a positive value.");
     }
 
-    var existingEmployee = _context.Employees
-        .AsNoTracking()  
-        .FirstOrDefault(e => e.Name == employee.Name);
+    var existingEmployee = await _context.Employees
+        .AsNoTracking()
+        .FirstOrDefaultAsync(e => e.Name == employee.Name);
 
     if (existingEmployee != null)
     {
       throw new InvalidOperationException("An employee with this name already exists.");
     }
 
-    _context.Employees.Add(employee);
+    await _context.Employees.AddAsync(employee);
 
     try
     {
-      _context.SaveChanges();
+      await _context.SaveChangesAsync();
     }
     catch (DbUpdateException ex)
     {
       throw new Exception("An error occurred while saving changes to the database.", ex);
     }
   }
-
 
   public Employee UpdateEmployee(int id, Employee employee)
   {
@@ -96,7 +97,6 @@ public class EmployeeService : IEmployeeService
     return existingEmployee;
   }
 
-
   public bool DeleteEmployee(int id)
   {
     var employee = _context.Employees.Find(id);
@@ -118,5 +118,4 @@ public class EmployeeService : IEmployeeService
 
     return true;
   }
-
 }
