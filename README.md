@@ -1,8 +1,8 @@
 # Employee Management API
 
-## DescripciÛn
+## Descripci√≥n
 
-Este proyecto es una API para la gestiÛn de empleados que permite registrar, actualizar, eliminar y listar empleados. TambiÈn implementa autenticaciÛn JWT y autorizaciÛn basada en roles (`Admin` y `User`). El proyecto sigue los principios SOLID y utiliza los patrones de diseÒo **Strategy** para el c·lculo de bonos y **Repository** para la separaciÛn de la lÛgica de acceso a datos.
+Este proyecto es una API para la gesti√≥n de empleados que permite registrar, actualizar, eliminar y listar empleados. Tambi√©n implementa autenticaci√≥n JWT y autorizaci√≥n basada en roles (`Admin` y `User`). El proyecto sigue los principios SOLID y utiliza los patrones de dise√±o **Strategy** para el c√°lculo de bonos y **Repository** para la separaci√≥n de la l√≥gica de acceso a datos.
 
 ## Requisitos
 
@@ -11,59 +11,63 @@ Este proyecto es una API para la gestiÛn de empleados que permite registrar, act
 - Visual Studio, Visual Studio Code, o cualquier editor compatible con .NET
 - Postman o similar para probar los endpoints de la API
 
-## ConfiguraciÛn
+## Configuraci√≥n
 
 ### Paso 1: Clonar el repositorio
 
-Clona este repositorio en tu m·quina local:
+Clona este repositorio en tu m√°quina local:
 
 ```bash
 git clone https://github.com/AlexRL-12/TechnicalTest.git
-Paso 2: Configurar la conexiÛn a la base de datos
-Abre el archivo appsettings.json y actualiza la cadena de conexiÛn a tu base de datos MySQL:
+Paso 2: Configurar la conexi√≥n a la base de datos
+Abre el archivo appsettings.json y actualiza la cadena de conexi√≥n a tu base de datos MySQL:
 
 Crea una base de datos en tu mysql llamada employee1 en este caso
 "ConnectionStrings": {
-  "DefaultConnection": "Server=localhost;Database=employee1;User=root;Password=tu_contraseÒa;"
+  "DefaultConnection": "Server=localhost;Database=employee1;User=root;Password=tu_contrase√±a;"
 }
 
-Paso 3: Crear la base de datos
+## Paso 3: Crear la base de datos
 Si no tienes la base de datos creada, ejecuta las migraciones de Entity Framework Core para crear las tablas necesarias:
 
 
 dotnet ef database update
 
-Paso 4: Ejecutar el proyecto
-Para ejecutar la aplicaciÛn, usa el siguiente comando:
+o tambien desde una terminal:
+
+dotnet ef database update --project C:\Users\ruta-a-tu-repositorio\TechnicalTest\TechnicalTest.csproj
+
+## Paso 4: Ejecutar el proyecto
+Para ejecutar la aplicaci√≥n, usa el siguiente comando:
 
 
 dotnet run
-Esto iniciar· el servidor en el puerto 5001 para HTTPS. Puedes cambiar este puerto en el archivo launchSettings.json si es necesario.
+Esto iniciar√° el servidor en el puerto 5001 para HTTPS. Puedes cambiar este puerto en el archivo launchSettings.json si es necesario.
 
-Paso 5: Probar la API
+## Paso 5: Probar la API
 Puedes utilizar herramientas como Postman para probar los siguientes endpoints.
 
 Endpoints
-AutenticaciÛn
-Iniciar sesiÛn (Login)
+Autenticaci√≥n
+Iniciar sesi√≥n (Login)
 
 POST /api/auth/login
 Cuerpo de la solicitud:
 
 {
   "username": "NombreDeUsuario",
-  "password": "ContraseÒa"
+  "password": "Contrase√±a"
 }
 
 Respuesta:
 
 {
-  "token": "JWT_TOKEN_AQUÕ"
+  "token": "JWT_TOKEN_AQU√ç"
 }
 
 
-GestiÛn de Empleados
-Nota: Necesitar·s un token JWT para acceder a estos endpoints (se obtiene al iniciar sesion)
+Gesti√≥n de Empleados
+Nota: Necesitar√°s un token JWT para acceder a estos endpoints (se obtiene al iniciar sesion)
 
 Obtener todos los empleados
 
@@ -97,16 +101,16 @@ Requiere roles: Admin
 Arquitectura
 El proyecto sigue una arquitectura desacoplada donde se aplican los principios SOLID:
 
-SRP (Responsabilidad ⁄nica): Cada clase tiene una ˙nica responsabilidad.
-PatrÛn Repository: Para abstraer el acceso a los datos y permitir cambios futuros sin afectar el servicio.
-PatrÛn Strategy: Para el c·lculo de bonos basado en la posiciÛn del empleado.
+SRP (Responsabilidad √önica): Cada clase tiene una √∫nica responsabilidad.
+Patr√≥n Repository: Para abstraer el acceso a los datos y permitir cambios futuros sin afectar el servicio.
+Patr√≥n Strategy: Para el c√°lculo de bonos basado en la posici√≥n del empleado.
 Seguridad
-Este proyecto utiliza JWT (JSON Web Tokens) para autenticaciÛn y autorizaciÛn:
+Este proyecto utiliza JWT (JSON Web Tokens) para autenticaci√≥n y autorizaci√≥n:
 
 Admin: Tiene permisos completos para agregar, actualizar y eliminar empleados.
 User: Solo tiene permiso para listar y consultar empleados.
 Middleware
-Un middleware personalizado registra la duraciÛn de cada solicitud HTTP:
+Un middleware personalizado registra la duraci√≥n de cada solicitud HTTP:
 
 
 public class RequestLoggingMiddleware
@@ -124,7 +128,7 @@ public class RequestLoggingMiddleware
     }
 }
 
-Problemas comunes de rendimiento y optimizaciÛn
+Problemas comunes de rendimiento y optimizaci√≥n
 Consultas lentas: Se evita cargando solo los datos necesarios con AsNoTracking() y Include().
 Herramientas de profiling: Puedes utilizar MiniProfiler o Application Insights para identificar consultas lentas y mejorar el rendimiento.
 
